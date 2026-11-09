@@ -5,23 +5,24 @@ import { ProductService } from '../../core/api/product.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { errorMessage } from '../../core/error-message';
 import { Product } from '../../core/models';
+import { ToastService } from '../../core/toast/toast.service';
+import { ModalComponent } from '../../shared/modal.component';
 
 @Component({
   selector: 'app-product-list',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ModalComponent, ReactiveFormsModule, RouterLink],
   templateUrl: './product-list.component.html',
 })
 export class ProductListComponent {
   private readonly productService = inject(ProductService);
   private readonly auth = inject(AuthService);
+  private readonly toast = inject(ToastService);
 
   protected readonly canManage = computed(() => this.auth.hasPermission('Products.Manage'));
   protected readonly canMove = computed(() => this.auth.hasPermission('Stock.Move'));
 
   protected readonly products = signal<Product[]>([]);
   protected readonly loading = signal(true);
-  protected readonly error = signal<string | null>(null);
-  protected readonly success = signal<string | null>(null);
   protected readonly search = signal('');
   protected readonly filteredProducts = computed(() => {
     const term = this.search().trim().toLowerCase();
@@ -89,7 +90,7 @@ export class ProductListComponent {
       next: (product) => {
         this.saving.set(false);
         this.editing.set(null);
-        this.success.set(`Produto ${product.sku} salvo.`);
+        this.toast.success(`Produto ${product.sku} salvo.`);
         this.load();
       },
       error: (error) => {
@@ -100,18 +101,15 @@ export class ProductListComponent {
   }
 
   protected confirmDelete(product: Product): void {
-    this.error.set(null);
-    this.success.set(null);
-
     this.productService.delete(product.id).subscribe({
       next: () => {
         this.confirmingDeleteId.set(null);
-        this.success.set(`Produto ${product.sku} excluído.`);
+        this.toast.success(`Produto ${product.sku} excluído.`);
         this.load();
       },
       error: (error) => {
         this.confirmingDeleteId.set(null);
-        this.error.set(errorMessage(error));
+        this.toast.error(errorMessage(error));
       },
     });
   }
@@ -120,7 +118,6 @@ export class ProductListComponent {
     this.form.reset();
     this.submitted.set(false);
     this.formError.set(null);
-    this.success.set(null);
   }
 
   private load(): void {
@@ -130,7 +127,7 @@ export class ProductListComponent {
         this.loading.set(false);
       },
       error: (error) => {
-        this.error.set(errorMessage(error));
+        this.toast.error(errorMessage(error));
         this.loading.set(false);
       },
     });

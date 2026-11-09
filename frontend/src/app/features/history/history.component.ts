@@ -6,6 +6,7 @@ import { StockService } from '../../core/api/stock.service';
 import { errorMessage } from '../../core/error-message';
 import { movementLabels } from '../../core/labels';
 import { Product, StockMovement } from '../../core/models';
+import { ToastService } from '../../core/toast/toast.service';
 
 const pageSize = 20;
 
@@ -17,6 +18,7 @@ const pageSize = 20;
 export class HistoryComponent {
   private readonly stockService = inject(StockService);
   private readonly productService = inject(ProductService);
+  private readonly toast = inject(ToastService);
 
   protected readonly labels = movementLabels;
   protected readonly products = signal<Product[]>([]);
@@ -27,7 +29,6 @@ export class HistoryComponent {
     inject(ActivatedRoute).snapshot.queryParamMap.get('productId'),
   );
   protected readonly loading = signal(true);
-  protected readonly error = signal<string | null>(null);
   protected readonly totalPages = computed(() =>
     Math.max(1, Math.ceil(this.totalCount() / pageSize)),
   );
@@ -35,7 +36,7 @@ export class HistoryComponent {
   constructor() {
     this.productService.list().subscribe({
       next: (products) => this.products.set(products),
-      error: (error) => this.error.set(errorMessage(error)),
+      error: (error) => this.toast.error(errorMessage(error)),
     });
     this.load();
   }
@@ -61,7 +62,7 @@ export class HistoryComponent {
         this.loading.set(false);
       },
       error: (error) => {
-        this.error.set(errorMessage(error));
+        this.toast.error(errorMessage(error));
         this.loading.set(false);
       },
     });

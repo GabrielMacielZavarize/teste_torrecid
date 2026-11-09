@@ -7,6 +7,7 @@ import { ProductService } from '../../core/api/product.service';
 import { StockService } from '../../core/api/stock.service';
 import { errorMessage } from '../../core/error-message';
 import { Product, Reservation } from '../../core/models';
+import { ToastService } from '../../core/toast/toast.service';
 
 type Operation = 'in' | 'out' | 'reserve' | 'adjust';
 
@@ -28,6 +29,7 @@ const integerPattern = /^-?\d+$/;
 export class StockOperationsComponent implements OnInit {
   private readonly productService = inject(ProductService);
   private readonly stockService = inject(StockService);
+  private readonly toast = inject(ToastService);
 
   // Preenchido pelo parâmetro :id da rota.
   readonly id = input.required<string>();
@@ -41,8 +43,6 @@ export class StockOperationsComponent implements OnInit {
 
   protected readonly product = signal<Product | null>(null);
   protected readonly reservations = signal<Reservation[]>([]);
-  protected readonly error = signal<string | null>(null);
-  protected readonly success = signal<string | null>(null);
   protected readonly submitted = signal(false);
   protected readonly saving = signal(false);
   protected readonly busyReservationId = signal<string | null>(null);
@@ -65,8 +65,6 @@ export class StockOperationsComponent implements OnInit {
   protected select(operation: Operation): void {
     this.operation.set(operation);
     this.submitted.set(false);
-    this.success.set(null);
-    this.error.set(null);
     this.applyValidators();
   }
 
@@ -81,20 +79,18 @@ export class StockOperationsComponent implements OnInit {
     const reason = this.form.controls.reason.value.trim();
 
     this.saving.set(true);
-    this.error.set(null);
-    this.success.set(null);
 
     this.requestFor(option.id, quantity, reason).subscribe({
       next: () => {
         this.saving.set(false);
         this.submitted.set(false);
         this.form.reset();
-        this.success.set(option.successMessage);
+        this.toast.success(option.successMessage);
         this.refresh();
       },
       error: (error) => {
         this.saving.set(false);
-        this.error.set(errorMessage(error));
+        this.toast.error(errorMessage(error));
         // O saldo pode ter mudado por outra operação; mostra o valor atual.
         this.refresh();
       },
@@ -139,18 +135,16 @@ export class StockOperationsComponent implements OnInit {
     successMessage: string,
   ): void {
     this.busyReservationId.set(reservation.id);
-    this.error.set(null);
-    this.success.set(null);
 
     request.subscribe({
       next: () => {
         this.busyReservationId.set(null);
-        this.success.set(successMessage);
+        this.toast.success(successMessage);
         this.refresh();
       },
       error: (error) => {
         this.busyReservationId.set(null);
-        this.error.set(errorMessage(error));
+        this.toast.error(errorMessage(error));
         this.refresh();
       },
     });
@@ -177,11 +171,11 @@ export class StockOperationsComponent implements OnInit {
 
     this.productService.getById(productId).subscribe({
       next: (product) => this.product.set(product),
-      error: (error) => this.error.set(errorMessage(error)),
+      error: (error) => this.toast.error(errorMessage(error)),
     });
     this.stockService.listActiveReservations(productId).subscribe({
       next: (reservations) => this.reservations.set(reservations),
-      error: (error) => this.error.set(errorMessage(error)),
+      error: (error) => this.toast.error(errorMessage(error)),
     });
   }
 }

@@ -4,49 +4,50 @@
       <h1>Usuários</h1>
       <p>{{ users().length }} usuário(s) cadastrado(s)</p>
     </div>
+    <button type="button" class="btn btn-primary" (click)="openCreate()">Novo usuário</button>
   </div>
 
-  @if (error(); as message) {
-    <div class="alert alert-error" role="alert">{{ message }}</div>
-  }
-  @if (success(); as message) {
-    <div class="alert alert-success" role="status">{{ message }}</div>
-  }
-
-  <form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-    <h2>Novo usuário</h2>
-
-    <div class="form-grid">
-      <div class="field">
-        <label for="username">Usuário</label>
-        <input id="username" formControlName="username" maxlength="50" autocomplete="off" />
-        @if (submitted() && form.controls.username.invalid) {
-          <span class="field-error">Informe o usuário.</span>
+  @if (creating()) {
+    <app-modal title="Novo usuário" (closed)="closeForm()">
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        @if (formError(); as message) {
+          <div class="alert alert-error" role="alert">{{ message }}</div>
         }
-      </div>
 
-      <div class="field">
-        <label for="password">Senha</label>
-        <input id="password" type="password" formControlName="password" maxlength="72" autocomplete="new-password" />
-        @if (submitted() && form.controls.password.invalid) {
-          <span class="field-error">A senha deve ter entre 8 e 72 caracteres.</span>
-        }
-      </div>
+        <div class="form-grid">
+          <div class="field">
+            <label for="username">Usuário</label>
+            <input id="username" formControlName="username" maxlength="50" autocomplete="off" autofocus />
+            @if (submitted() && form.controls.username.invalid) {
+              <span class="field-error">Informe o usuário.</span>
+            }
+          </div>
 
-      <div class="field">
-        <label for="role">Papel</label>
-        <select id="role" formControlName="role">
-          @for (role of roles; track role) {
-            <option [value]="role">{{ labels[role] }}</option>
-          }
-        </select>
-      </div>
-    </div>
+          <div class="field">
+            <label for="password">Senha</label>
+            <input id="password" type="password" formControlName="password" maxlength="72" autocomplete="new-password" />
+            @if (submitted() && form.controls.password.invalid) {
+              <span class="field-error">A senha deve ter entre 8 e 72 caracteres.</span>
+            }
+          </div>
 
-    <div class="form-actions">
-      <button type="submit" class="btn btn-primary" [disabled]="saving()">Criar usuário</button>
-    </div>
-  </form>
+          <div class="field">
+            <label for="role">Papel</label>
+            <select id="role" formControlName="role">
+              @for (role of roles; track role) {
+                <option [value]="role">{{ labels[role] }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn" (click)="closeForm()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="saving()">Criar usuário</button>
+        </div>
+      </form>
+    </app-modal>
+  }
 
   <section class="card">
     <div class="table-wrap">

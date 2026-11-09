@@ -4,54 +4,47 @@
       <h1>Produtos</h1>
       <p>{{ products().length }} produto(s) ativo(s)</p>
     </div>
-    @if (canManage() && editing() === null) {
+    @if (canManage()) {
       <button type="button" class="btn btn-primary" (click)="openCreate()">Novo produto</button>
     }
   </div>
 
-  @if (error(); as message) {
-    <div class="alert alert-error" role="alert">{{ message }}</div>
-  }
-  @if (success(); as message) {
-    <div class="alert alert-success" role="status">{{ message }}</div>
-  }
-
   @if (editing() !== null) {
-    <form class="card" [formGroup]="form" (ngSubmit)="save()" novalidate>
-      <h2>{{ editing() === 'new' ? 'Novo produto' : 'Editar produto' }}</h2>
+    <app-modal [title]="editing() === 'new' ? 'Novo produto' : 'Editar produto'" (closed)="closeForm()">
+      <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+        @if (formError(); as message) {
+          <div class="alert alert-error" role="alert">{{ message }}</div>
+        }
 
-      @if (formError(); as message) {
-        <div class="alert alert-error" role="alert">{{ message }}</div>
-      }
+        <div class="form-grid">
+          <div class="field">
+            <label for="sku">SKU</label>
+            <input id="sku" formControlName="sku" maxlength="50" autofocus />
+            @if (submitted() && form.controls.sku.invalid) {
+              <span class="field-error">Informe o SKU.</span>
+            }
+          </div>
 
-      <div class="form-grid">
-        <div class="field">
-          <label for="sku">SKU</label>
-          <input id="sku" formControlName="sku" maxlength="50" />
-          @if (submitted() && form.controls.sku.invalid) {
-            <span class="field-error">Informe o SKU.</span>
-          }
+          <div class="field">
+            <label for="name">Nome</label>
+            <input id="name" formControlName="name" maxlength="150" autofocus />
+            @if (submitted() && form.controls.name.invalid) {
+              <span class="field-error">Informe o nome.</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="description">Descrição (opcional)</label>
+            <input id="description" formControlName="description" maxlength="500" />
+          </div>
         </div>
 
-        <div class="field">
-          <label for="name">Nome</label>
-          <input id="name" formControlName="name" maxlength="150" />
-          @if (submitted() && form.controls.name.invalid) {
-            <span class="field-error">Informe o nome.</span>
-          }
+        <div class="form-actions">
+          <button type="button" class="btn" (click)="closeForm()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="saving()">Salvar</button>
         </div>
-
-        <div class="field">
-          <label for="description">Descrição (opcional)</label>
-          <input id="description" formControlName="description" maxlength="500" />
-        </div>
-      </div>
-
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary" [disabled]="saving()">Salvar</button>
-        <button type="button" class="btn" (click)="closeForm()">Cancelar</button>
-      </div>
-    </form>
+      </form>
+    </app-modal>
   }
 
   <section class="card">

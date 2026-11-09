@@ -10,13 +10,6 @@
     <a class="btn" routerLink="/history" [queryParams]="{ productId: id() }">Ver histórico</a>
   </div>
 
-  @if (error(); as message) {
-    <div class="alert alert-error" role="alert">{{ message }}</div>
-  }
-  @if (success(); as message) {
-    <div class="alert alert-success" role="status">{{ message }}</div>
-  }
-
   @if (product(); as current) {
     <dl class="balances">
       <div class="card">

@@ -187,11 +187,6 @@ a {
   color: var(--danger);
 }
 
-.alert-success {
-  background: var(--accent-soft);
-  color: var(--accent-strong);
-}
-
 .alert-warning {
   background: var(--warning-soft);
   color: var(--warning-ink);
@@ -256,6 +251,18 @@ tbody tr:last-child td {
   padding: 24px 8px;
   text-align: center;
   color: var(--muted);
+}
+
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
+dialog .form-grid {
+  grid-template-columns: 1fr;
+}
+
+dialog .form-actions {
+  justify-content: flex-end;
 }
 
 .search {
