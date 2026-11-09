@@ -31,6 +31,11 @@ internal sealed class StockMovementConfiguration : IEntityTypeConfiguration<Stoc
             .HasForeignKey(movement => movement.ReservationId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(movement => movement.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasIndex(movement => new { movement.ProductId, movement.OccurredAt });
     }
 

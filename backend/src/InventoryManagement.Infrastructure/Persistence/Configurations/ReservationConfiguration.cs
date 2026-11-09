@@ -20,6 +20,11 @@ internal sealed class ReservationConfiguration : IEntityTypeConfiguration<Reserv
             .HasForeignKey(reservation => reservation.ProductId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(reservation => reservation.CreatedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasIndex(reservation => new { reservation.ProductId, reservation.Status });
     }
 }

@@ -28,6 +28,7 @@ internal sealed class StockMovementRepository(AppDbContext context) : IStockMove
         var items = await (
                 from movement in movements
                 join product in context.Products.AsNoTracking() on movement.ProductId equals product.Id
+                join user in context.Users.AsNoTracking() on movement.UserId equals user.Id
                 orderby movement.OccurredAt descending, movement.Id
                 select new StockMovementDto(
                     movement.Id,
@@ -42,6 +43,7 @@ internal sealed class StockMovementRepository(AppDbContext context) : IStockMove
                     movement.BalanceAfter.Physical,
                     movement.BalanceAfter.Reserved,
                     movement.UserId,
+                    user.Username,
                     movement.OccurredAt,
                     movement.Reason))
             .Skip((filter.Page - 1) * filter.PageSize)

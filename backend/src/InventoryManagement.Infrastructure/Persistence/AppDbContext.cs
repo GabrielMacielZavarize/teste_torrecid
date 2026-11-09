@@ -5,6 +5,7 @@ namespace InventoryManagement.Infrastructure.Persistence;
 
 public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
+    public DbSet<User> Users => Set<User>();
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Reservation> Reservations => Set<Reservation>();
     public DbSet<StockMovement> StockMovements => Set<StockMovement>();

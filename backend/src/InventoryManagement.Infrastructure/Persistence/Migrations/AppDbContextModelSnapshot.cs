@@ -94,6 +94,8 @@ namespace InventoryManagement.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedByUserId");
+
                     b.HasIndex("ProductId", "Status");
 
                     b.ToTable("Reservations");
@@ -154,13 +156,49 @@ namespace InventoryManagement.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ReservationId");
 
+                    b.HasIndex("UserId");
+
                     b.HasIndex("ProductId", "OccurredAt");
 
                     b.ToTable("StockMovements");
                 });
 
+            modelBuilder.Entity("InventoryManagement.Domain.Entities.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("InventoryManagement.Domain.Entities.Reservation", b =>
                 {
+                    b.HasOne("InventoryManagement.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("InventoryManagement.Domain.Entities.Product", null)
                         .WithMany()
                         .HasForeignKey("ProductId")
@@ -180,6 +218,12 @@ namespace InventoryManagement.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("ReservationId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("InventoryManagement.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

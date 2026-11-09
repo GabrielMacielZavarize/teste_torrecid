@@ -22,6 +22,7 @@ public class StockServiceTests
     {
         var currentUser = Substitute.For<ICurrentUser>();
         currentUser.UserId.Returns(UserId);
+        currentUser.Username.Returns("operador");
 
         _service = new StockService(_products, _reservations, _movements, _unitOfWork, currentUser);
     }
@@ -35,6 +36,7 @@ public class StockServiceTests
 
         Assert.Equal(15, result.PhysicalAfter);
         Assert.Equal(UserId, result.UserId);
+        Assert.Equal("operador", result.Username);
         _movements.Received(1).Add(Arg.Is<StockMovement>(
             movement => movement.Type == MovementType.StockIn && movement.UserId == UserId));
         await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());

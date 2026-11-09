@@ -7,6 +7,8 @@ public sealed record StockOperationRequest(int Quantity, string? Reason);
 
 public sealed record AdjustStockRequest(int CountedQuantity, string Reason);
 
+public sealed record ReservationActionRequest(string? Reason);
+
 public sealed record StockHistoryFilter(Guid? ProductId = null, int Page = 1, int PageSize = 20);
 
 public sealed record ReservationDto(
@@ -39,10 +41,11 @@ public sealed record StockMovementDto(
     int PhysicalAfter,
     int ReservedAfter,
     Guid UserId,
+    string Username,
     DateTime OccurredAt,
     string? Reason)
 {
-    public static StockMovementDto From(StockMovement movement, Product product) => new(
+    public static StockMovementDto From(StockMovement movement, Product product, string username) => new(
         movement.Id,
         movement.ProductId,
         product.Sku,
@@ -55,6 +58,7 @@ public sealed record StockMovementDto(
         movement.BalanceAfter.Physical,
         movement.BalanceAfter.Reserved,
         movement.UserId,
+        username,
         movement.OccurredAt,
         movement.Reason);
 }

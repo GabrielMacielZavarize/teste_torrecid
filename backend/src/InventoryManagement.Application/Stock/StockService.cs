@@ -120,7 +120,7 @@ public sealed class StockService(
         movements.Add(movement);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return StockMovementDto.From(movement, product);
+        return StockMovementDto.From(movement, product, currentUser.Username);
     }
 
     private async Task<StockMovementDto> ExecuteOnReservationAsync(
@@ -137,7 +137,7 @@ public sealed class StockService(
         movements.Add(movement);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return StockMovementDto.From(movement, product);
+        return StockMovementDto.From(movement, product, currentUser.Username);
     }
 
     private async Task<Product> GetProductAsync(Guid id, CancellationToken cancellationToken)
