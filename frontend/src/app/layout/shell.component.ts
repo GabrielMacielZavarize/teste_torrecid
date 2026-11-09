@@ -1,7 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../core/auth/auth.service';
-import { roleLabels } from '../core/labels';
 
 @Component({
   selector: 'app-shell',
@@ -14,10 +13,6 @@ export class ShellComponent {
   protected readonly auth = inject(AuthService);
 
   protected readonly username = computed(() => this.auth.session()?.username ?? '');
-  protected readonly roleLabel = computed(() => {
-    const role = this.auth.session()?.role;
-    return role ? roleLabels[role] : '';
-  });
 
   protected logout(): void {
     this.auth.logout();

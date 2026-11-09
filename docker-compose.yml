@@ -17,5 +17,23 @@ services:
       timeout: 5s
       retries: 10
 
+  api:
+    build: ./backend
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Default: Host=postgres;Port=5432;Database=inventory_management;Username=inventory;Password=inventory_dev
+    ports:
+      - "5047:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - api
+
 volumes:
   postgres_data:

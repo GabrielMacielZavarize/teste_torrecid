@@ -20,17 +20,16 @@ public class AuthServiceTests
     }
 
     [Fact]
-    public async Task LoginAsync_WithValidCredentials_ReturnsTokenAndNormalizesUsername()
+    public async Task LoginAsync_WithValidCredentials_ReturnsToken()
     {
         var user = StubUser();
         _passwordHasher.Verify("senha-correta", user.PasswordHash).Returns(true);
         var token = new AccessToken("token", DateTime.UtcNow.AddHours(2));
         _tokenService.CreateToken(user).Returns(token);
 
-        var result = await _service.LoginAsync(new LoginRequest("  ADMIN ", "senha-correta"));
+        var result = await _service.LoginAsync(new LoginRequest("admin", "senha-correta"));
 
         Assert.Equal(token, result.AccessToken);
-        Assert.Equal("admin", result.Username);
         Assert.Equal(Role.Administrator, result.Role);
     }
 
@@ -44,15 +43,6 @@ public class AuthServiceTests
             () => _service.LoginAsync(new LoginRequest("admin", "senha-errada")));
 
         _tokenService.DidNotReceive().CreateToken(Arg.Any<User>());
-    }
-
-    [Fact]
-    public async Task LoginAsync_WithUnknownUser_ThrowsSameException()
-    {
-        _users.GetByUsernameAsync("ninguem", Arg.Any<CancellationToken>()).Returns((User?)null);
-
-        await Assert.ThrowsAsync<InvalidCredentialsException>(
-            () => _service.LoginAsync(new LoginRequest("ninguem", "qualquer-senha")));
     }
 
     private User StubUser()

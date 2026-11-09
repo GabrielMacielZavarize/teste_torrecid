@@ -47,11 +47,6 @@ nav a.active {
   gap: 12px;
 }
 
-.user small {
-  color: #aab0b6;
-  font-size: 0.82rem;
-}
-
 .logout {
   padding: 3px 10px;
   border: 1px solid #5a6168;
