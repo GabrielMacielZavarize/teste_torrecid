@@ -2,7 +2,7 @@
 
 Aplicação para cadastro de produtos e controle de entradas, saídas, reservas, ajustes e histórico de estoque, com login e permissões por papel.
 
-Tecnologias: .NET 10 (Web API), Angular 22, PostgreSQL e Docker.
+Tecnologias utilizadas: .NET 10 (Web API), Angular 22, PostgreSQL e Docker.
 
 ## Como rodar
 
@@ -12,12 +12,12 @@ Com o Docker em execução, na raiz do repositório:
 docker compose up --build
 ```
 
-A primeira execução leva alguns minutos. As tabelas e os usuários de teste são criados automaticamente.
+A primeira execução leva alguns minutos. As tabelas e os usuários de teste serão criados automaticamente.
 
 - Aplicação: http://localhost:4200
 - Swagger: http://localhost:5047/swagger
 
-A API roda em modo `Development` para facilitar a avaliação. Credenciais e segredos do repositório são apenas para uso local.
+Para facilitar a avaliação a o projeto roda inteiramente no modo Dev
 
 ## Usuários de teste
 
