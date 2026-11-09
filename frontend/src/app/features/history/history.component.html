@@ -1,0 +1,72 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Histórico de movimentações</h1>
+      <p>{{ totalCount() }} movimento(s) registrado(s)</p>
+    </div>
+  </div>
+
+  @if (error(); as message) {
+    <div class="alert alert-error" role="alert">{{ message }}</div>
+  }
+
+  <section class="card">
+    <div class="field search">
+      <label for="product">Filtrar por produto ativo</label>
+      <select id="product" #filter (change)="filterByProduct(filter.value)">
+        <option value="" [selected]="productId() === null">Todos os produtos</option>
+        @for (product of products(); track product.id) {
+          <option [value]="product.id" [selected]="productId() === product.id">
+            {{ product.sku }} · {{ product.name }}
+          </option>
+        }
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Data e hora</th>
+            <th>Produto</th>
+            <th>Tipo</th>
+            <th class="num">Quantidade</th>
+            <th class="num">Físico</th>
+            <th class="num">Reservado</th>
+            <th>Usuário</th>
+            <th>Motivo</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (movement of movements(); track movement.id) {
+            <tr>
+              <td class="nowrap">{{ movement.occurredAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td>
+                <span class="mono">{{ movement.productSku }}</span>
+                <div class="muted">{{ movement.productName }}</div>
+              </td>
+              <td><span class="badge">{{ labels[movement.type] }}</span></td>
+              <td class="num">{{ movement.quantity }}</td>
+              <td class="num">{{ movement.physicalBefore }} → {{ movement.physicalAfter }}</td>
+              <td class="num">{{ movement.reservedBefore }} → {{ movement.reservedAfter }}</td>
+              <td>{{ movement.username }}</td>
+              <td>{{ movement.reason ?? '—' }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="empty" colspan="8">
+                {{ loading() ? 'Carregando...' : 'Nenhuma movimentação encontrada.' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-sm" [disabled]="page() <= 1" (click)="goToPage(page() - 1)">Anterior</button>
+      <span class="muted">Página {{ page() }} de {{ totalPages() }}</span>
+      <button type="button" class="btn btn-sm" [disabled]="page() >= totalPages()" (click)="goToPage(page() + 1)">Próxima</button>
+    </div>
+  </section>
+</div>

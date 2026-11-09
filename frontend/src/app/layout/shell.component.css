@@ -1,0 +1,71 @@
+.topbar {
+  background: var(--ink);
+  color: #fff;
+}
+
+.topbar-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 28px;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 10px 16px;
+}
+
+.brand {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+nav {
+  display: flex;
+  flex: 1;
+  gap: 18px;
+}
+
+nav a {
+  padding: 2px 0;
+  border-bottom: 2px solid transparent;
+  color: #c9ced3;
+  text-decoration: none;
+}
+
+nav a:hover {
+  color: #fff;
+}
+
+nav a.active {
+  border-bottom-color: #58c7b0;
+  color: #fff;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user small {
+  color: #aab0b6;
+  font-size: 0.82rem;
+}
+
+.logout {
+  padding: 3px 10px;
+  border: 1px solid #5a6168;
+  border-radius: var(--radius);
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.logout:hover {
+  border-color: #fff;
+}
+
+.topbar :focus-visible {
+  outline-color: #fff;
+}

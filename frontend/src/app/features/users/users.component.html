@@ -1,0 +1,71 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Usuários</h1>
+      <p>{{ users().length }} usuário(s) cadastrado(s)</p>
+    </div>
+  </div>
+
+  @if (error(); as message) {
+    <div class="alert alert-error" role="alert">{{ message }}</div>
+  }
+  @if (success(); as message) {
+    <div class="alert alert-success" role="status">{{ message }}</div>
+  }
+
+  <form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <h2>Novo usuário</h2>
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="username">Usuário</label>
+        <input id="username" formControlName="username" maxlength="50" autocomplete="off" />
+        @if (submitted() && form.controls.username.invalid) {
+          <span class="field-error">Informe o usuário.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="password">Senha</label>
+        <input id="password" type="password" formControlName="password" maxlength="72" autocomplete="new-password" />
+        @if (submitted() && form.controls.password.invalid) {
+          <span class="field-error">A senha deve ter entre 8 e 72 caracteres.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="role">Papel</label>
+        <select id="role" formControlName="role">
+          @for (role of roles; track role) {
+            <option [value]="role">{{ labels[role] }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="saving()">Criar usuário</button>
+    </div>
+  </form>
+
+  <section class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Usuário</th>
+            <th>Papel</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users(); track user.id) {
+            <tr>
+              <td>{{ user.username }}</td>
+              <td><span class="badge">{{ labels[user.role] }}</span></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

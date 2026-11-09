@@ -1,0 +1,26 @@
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" routerLink="/">Controle de Estoque</a>
+
+    <nav aria-label="Navegação principal">
+      @if (auth.hasPermission('Products.View')) {
+        <a routerLink="/products" routerLinkActive="active">Produtos</a>
+      }
+      @if (auth.hasPermission('Stock.ViewHistory')) {
+        <a routerLink="/history" routerLinkActive="active">Histórico</a>
+      }
+      @if (auth.hasPermission('Users.Manage')) {
+        <a routerLink="/users" routerLinkActive="active">Usuários</a>
+      }
+    </nav>
+
+    <div class="user">
+      <span>{{ username() }} <small>{{ roleLabel() }}</small></span>
+      <button type="button" class="logout" (click)="logout()">Sair</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <router-outlet />
+</main>

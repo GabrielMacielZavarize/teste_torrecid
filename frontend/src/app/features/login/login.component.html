@@ -1,0 +1,33 @@
+<main class="login">
+  <form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <h1>Controle de Estoque</h1>
+    <p class="muted">Entre com seu usuário para continuar.</p>
+
+    @if (sessionExpired && !error()) {
+      <div class="alert alert-warning" role="status">Sua sessão expirou. Entre novamente.</div>
+    }
+    @if (error(); as message) {
+      <div class="alert alert-error" role="alert">{{ message }}</div>
+    }
+
+    <div class="field">
+      <label for="username">Usuário</label>
+      <input id="username" formControlName="username" autocomplete="username" />
+      @if (submitted() && form.controls.username.invalid) {
+        <span class="field-error">Informe o usuário.</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="password">Senha</label>
+      <input id="password" type="password" formControlName="password" autocomplete="current-password" />
+      @if (submitted() && form.controls.password.invalid) {
+        <span class="field-error">Informe a senha.</span>
+      }
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="submitting()">
+      {{ submitting() ? 'Entrando...' : 'Entrar' }}
+    </button>
+  </form>
+</main>

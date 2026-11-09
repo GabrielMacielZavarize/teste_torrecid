@@ -1,0 +1,121 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Produtos</h1>
+      <p>{{ products().length }} produto(s) ativo(s)</p>
+    </div>
+    @if (canManage() && editing() === null) {
+      <button type="button" class="btn btn-primary" (click)="openCreate()">Novo produto</button>
+    }
+  </div>
+
+  @if (error(); as message) {
+    <div class="alert alert-error" role="alert">{{ message }}</div>
+  }
+  @if (success(); as message) {
+    <div class="alert alert-success" role="status">{{ message }}</div>
+  }
+
+  @if (editing() !== null) {
+    <form class="card" [formGroup]="form" (ngSubmit)="save()" novalidate>
+      <h2>{{ editing() === 'new' ? 'Novo produto' : 'Editar produto' }}</h2>
+
+      @if (formError(); as message) {
+        <div class="alert alert-error" role="alert">{{ message }}</div>
+      }
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="sku">SKU</label>
+          <input id="sku" formControlName="sku" maxlength="50" />
+          @if (submitted() && form.controls.sku.invalid) {
+            <span class="field-error">Informe o SKU.</span>
+          }
+        </div>
+
+        <div class="field">
+          <label for="name">Nome</label>
+          <input id="name" formControlName="name" maxlength="150" />
+          @if (submitted() && form.controls.name.invalid) {
+            <span class="field-error">Informe o nome.</span>
+          }
+        </div>
+
+        <div class="field">
+          <label for="description">Descrição (opcional)</label>
+          <input id="description" formControlName="description" maxlength="500" />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="saving()">Salvar</button>
+        <button type="button" class="btn" (click)="closeForm()">Cancelar</button>
+      </div>
+    </form>
+  }
+
+  <section class="card">
+    <div class="field search">
+      <label for="search">Buscar por nome ou SKU</label>
+      <input id="search" #box [value]="search()" (input)="search.set(box.value)" />
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>SKU</th>
+            <th>Nome</th>
+            <th class="num">Físico</th>
+            <th class="num">Reservado</th>
+            <th class="num">Disponível</th>
+            @if (canManage() || canMove()) {
+              <th><span class="sr-only">Ações</span></th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of filteredProducts(); track product.id) {
+            <tr>
+              <td class="mono nowrap">{{ product.sku }}</td>
+              <td>
+                {{ product.name }}
+                @if (product.description) {
+                  <div class="muted">{{ product.description }}</div>
+                }
+              </td>
+              <td class="num">{{ product.physicalQuantity }}</td>
+              <td class="num">{{ product.reservedQuantity }}</td>
+              <td class="num"><strong>{{ product.availableQuantity }}</strong></td>
+              @if (canManage() || canMove()) {
+                <td>
+                  <div class="row-actions">
+                    @if (confirmingDeleteId() === product.id) {
+                      <span class="nowrap">Excluir este produto?</span>
+                      <button type="button" class="btn btn-sm btn-danger" (click)="confirmDelete(product)">Confirmar</button>
+                      <button type="button" class="btn btn-sm" (click)="confirmingDeleteId.set(null)">Não</button>
+                    } @else {
+                      @if (canMove()) {
+                        <a class="btn btn-sm" [routerLink]="['/products', product.id, 'stock']">Movimentar</a>
+                      }
+                      @if (canManage()) {
+                        <button type="button" class="btn btn-sm" (click)="openEdit(product)">Editar</button>
+                        <button type="button" class="btn btn-sm btn-danger" (click)="confirmingDeleteId.set(product.id)">Excluir</button>
+                      }
+                    }
+                  </div>
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr>
+              <td class="empty" colspan="6">
+                {{ loading() ? 'Carregando...' : 'Nenhum produto encontrado.' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

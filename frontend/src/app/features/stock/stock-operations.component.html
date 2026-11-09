@@ -1,0 +1,124 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <a routerLink="/products">Voltar para produtos</a>
+      <h1>{{ product()?.name ?? 'Carregando...' }}</h1>
+      @if (product(); as current) {
+        <p class="mono">{{ current.sku }}</p>
+      }
+    </div>
+    <a class="btn" routerLink="/history" [queryParams]="{ productId: id() }">Ver histórico</a>
+  </div>
+
+  @if (error(); as message) {
+    <div class="alert alert-error" role="alert">{{ message }}</div>
+  }
+  @if (success(); as message) {
+    <div class="alert alert-success" role="status">{{ message }}</div>
+  }
+
+  @if (product(); as current) {
+    <dl class="balances">
+      <div class="card">
+        <dt>Físico</dt>
+        <dd>{{ current.physicalQuantity }}</dd>
+      </div>
+      <div class="card">
+        <dt>Reservado</dt>
+        <dd>{{ current.reservedQuantity }}</dd>
+      </div>
+      <div class="card available">
+        <dt>Disponível</dt>
+        <dd>{{ current.availableQuantity }}</dd>
+      </div>
+    </dl>
+  }
+
+  <form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <h2>Nova movimentação</h2>
+
+    <div class="segmented" role="group" aria-label="Tipo de movimentação">
+      @for (option of operations; track option.id) {
+        <button
+          type="button"
+          [class.active]="operation() === option.id"
+          [attr.aria-pressed]="operation() === option.id"
+          (click)="select(option.id)"
+        >
+          {{ option.label }}
+        </button>
+      }
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="quantity">{{ selected().quantityLabel }}</label>
+        <input id="quantity" type="number" inputmode="numeric" step="1" formControlName="quantity" />
+        @if (submitted() && form.controls.quantity.invalid) {
+          <span class="field-error">
+            {{ operation() === 'adjust' ? 'Informe um número inteiro, zero ou maior.' : 'Informe um número inteiro maior que zero.' }}
+          </span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="reason">Motivo {{ operation() === 'adjust' ? '' : '(opcional)' }}</label>
+        <input id="reason" formControlName="reason" maxlength="500" />
+        @if (submitted() && form.controls.reason.invalid) {
+          <span class="field-error">O motivo é obrigatório no ajuste manual.</span>
+        }
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="saving()">Registrar</button>
+    </div>
+  </form>
+
+  <section class="card">
+    <h2>Reservas ativas</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Criada em</th>
+            <th class="num">Quantidade</th>
+            <th><span class="sr-only">Ações</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (reservation of reservations(); track reservation.id) {
+            <tr>
+              <td class="nowrap">{{ reservation.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td class="num">{{ reservation.quantity }}</td>
+              <td>
+                <div class="row-actions">
+                  <button
+                    type="button"
+                    class="btn btn-sm"
+                    [disabled]="busyReservationId() === reservation.id"
+                    (click)="fulfillReservation(reservation)"
+                  >
+                    Atender
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-danger"
+                    [disabled]="busyReservationId() === reservation.id"
+                    (click)="cancelReservation(reservation)"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="empty" colspan="3">Nenhuma reserva ativa.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
