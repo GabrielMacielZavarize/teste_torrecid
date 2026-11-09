@@ -12,6 +12,10 @@ public class Reservation
     public Guid CreatedByUserId { get; private init; }
     public DateTime CreatedAt { get; private init; }
 
+    private Reservation()
+    {
+    }
+
     internal Reservation(Guid productId, int quantity, Guid createdByUserId)
     {
         Id = Guid.NewGuid();

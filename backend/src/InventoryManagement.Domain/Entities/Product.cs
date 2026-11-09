@@ -16,6 +16,13 @@ public class Product
     public string? Description { get; private set; }
     public bool IsActive { get; private set; }
     public StockBalance Stock { get; private set; }
+    
+    private Product()
+    {
+        Sku = null!;
+        Name = null!;
+        Stock = null!;
+    }
 
     public Product(string sku, string name, string? description = null)
     {
@@ -38,7 +45,6 @@ public class Product
     {
         EnsureActive();
 
-        // Reservado nunca passa do físico: físico zero garante que não há reserva ativa.
         if (Stock.Physical != 0)
             throw new DomainException("Só é possível excluir um produto com saldo físico zerado.");
 

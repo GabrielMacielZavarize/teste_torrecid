@@ -212,6 +212,16 @@ public class ProductTests
     }
 
     [Fact]
+    public void StockIn_WithReasonTooLong_ThrowsAndKeepsBalance()
+    {
+        var product = new Product("SKU-1", "Produto");
+        var reason = new string('a', StockMovement.ReasonMaxLength + 1);
+
+        Assert.Throws<DomainException>(() => product.StockIn(5, UserId, reason));
+        Assert.Equal(StockBalance.Zero, product.Stock);
+    }
+
+    [Fact]
     public void InactiveProduct_RejectsMovementsAndEdits()
     {
         var product = new Product("SKU-1", "Produto");

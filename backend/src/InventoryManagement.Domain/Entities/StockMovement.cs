@@ -6,6 +6,8 @@ namespace InventoryManagement.Domain.Entities;
 
 public class StockMovement
 {
+    public const int ReasonMaxLength = 500;
+
     public Guid Id { get; private init; }
     public Guid ProductId { get; private init; }
     public Guid? ReservationId { get; private init; }
@@ -17,6 +19,12 @@ public class StockMovement
     public DateTime OccurredAt { get; private init; }
     public string? Reason { get; private init; }
 
+    private StockMovement()
+    {
+        BalanceBefore = null!;
+        BalanceAfter = null!;
+    }
+
     internal StockMovement(
         Guid productId,
         MovementType type,
@@ -27,6 +35,10 @@ public class StockMovement
         string? reason,
         Guid? reservationId)
     {
+        var normalizedReason = reason?.Trim();
+        if (normalizedReason?.Length > ReasonMaxLength)
+            throw new DomainException($"O motivo aceita no máximo {ReasonMaxLength} caracteres.");
+
         if (userId == Guid.Empty)
             throw new DomainException("Todo movimento precisa de um usuário responsável.");
 
@@ -39,6 +51,6 @@ public class StockMovement
         BalanceAfter = balanceAfter;
         UserId = userId;
         OccurredAt = DateTime.UtcNow;
-        Reason = reason?.Trim();
+        Reason = normalizedReason;
     }
 }
